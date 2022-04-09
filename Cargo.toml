@@ -1,0 +1,11 @@
+[package]
+name = "oura-script-sink"
+version = "1.0.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "3.1.8", features = ["derive"] }
+oura = { git = "https://github.com/txpipe/oura", rev = "aa3727c5118c0f37df708208f083d2b3730f1a1f" }
+serde_json = "1.0.79"
