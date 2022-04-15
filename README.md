@@ -83,6 +83,10 @@ $ cd oura-script-sink
 $ cargo install --path .
 ```
 
+# Support
+
+You can get support in [pool.pm Telegram group](https://t.me/pool_pm).
+
 ## License
 
 This project is licensed under the Apache-2.0 license. Please see the [LICENSE](LICENSE.md) file for more details.
