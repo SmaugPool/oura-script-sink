@@ -1,6 +1,6 @@
 # Oura Script Sink
 
-Dump [Cardano](https://cardano.org) scripts using [Oura](https://github.com/txpipe/oura).
+Standalone [Cardano](https://cardano.org) scripts live dumper using [Oura](https://github.com/txpipe/oura) as a library.
 
 For now, [simple scripts](https://github.com/input-output-hk/cardano-node/blob/master/doc/reference/simple-scripts.md), also called native scripts, are supported, [Plutus scripts](https://docs.cardano.org/plutus/Plutus-validator-scripts) are not.
 
