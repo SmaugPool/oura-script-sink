@@ -25,6 +25,15 @@ OPTIONS:
     -V, --version              Print version information
 ```
 
+For example, assuming a Cardano node running locally with its socket path set to `path/to/socket`:
+```
+$ oura-script-sink --socket path/to/socket --verbose
+```
+or with Prometheus metrics and no output (daemon mode):
+```
+$ oura-script-sink --socket path/to/socket --metrics 0.0.0.0:9188/metrics
+```
+
 ## Output
 
 Scripts are written to `<OUTPUT>/<PREFIX>/<POLICY_ID.json>`.
