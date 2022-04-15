@@ -7,7 +7,7 @@ use oura::{
         BootstrapResult, FilterProvider, PartialBootstrapResult, SinkProvider, SourceProvider,
         StageReceiver,
     },
-    sources::{n2c, AddressArg, BearerKind, IntersectArg, MagicArg, PointArg},
+    sources::{n2c, n2n, AddressArg, BearerKind, IntersectArg, MagicArg, PointArg},
     utils::{cursor, ChainWellKnownInfo, Utils, WithUtils},
 };
 
@@ -24,7 +24,17 @@ pub fn oura_bootstrap(args: Args) -> Result<Vec<JoinHandle<()>>, Error> {
     let magic = MagicArg::from_str(&args.network)?;
     let utils = get_utils(*magic, &args.output, args.metrics)?;
 
-    let (source_handle, source_rx) = bootstrap_source(args.socket, magic, utils.clone())?;
+    let (source_handle, source_rx) = match (args.socket, args.host) {
+        (Some(socket), None) => {
+            bootstrap_n2c_source(AddressArg(BearerKind::Unix, socket), magic, utils.clone())?
+        }
+        (None, Some(host)) => {
+            let addr = format!("{}:{}", host, args.port);
+            bootstrap_n2n_source(AddressArg(BearerKind::Tcp, addr), magic, utils.clone())?
+        }
+        _ => return Err("invalid node options".into()),
+    };
+
     let (filter_handle, filter_rx) = bootstrap_filter(source_rx)?;
     let sink_handle = bootstrap_sink(args.output, utils, filter_rx, args.verbose)?;
 
@@ -48,10 +58,14 @@ fn get_utils(magic: u64, output: &String, metrics: Option<Metrics>) -> Result<Ar
     }))
 }
 
-fn bootstrap_source(socket: String, magic: MagicArg, utils: Arc<Utils>) -> PartialBootstrapResult {
+fn bootstrap_n2c_source(
+    address: AddressArg,
+    magic: MagicArg,
+    utils: Arc<Utils>,
+) -> PartialBootstrapResult {
     #[allow(deprecated)]
     let source_config = n2c::Config {
-        address: AddressArg(BearerKind::Unix, socket),
+        address: address,
         magic: Some(magic),
         well_known: None,
         mapper: Default::default(),
@@ -62,6 +76,33 @@ fn bootstrap_source(socket: String, magic: MagicArg, utils: Arc<Utils>) -> Parti
             MARY_FIRST_BLOCK_HASH.to_owned(),
         ))),
         retry_policy: None,
+    };
+
+    let source_setup = WithUtils::new(source_config, utils);
+    let (source_handle, source_rx) = source_setup.bootstrap()?;
+
+    Ok((source_handle, source_rx))
+}
+
+fn bootstrap_n2n_source(
+    address: AddressArg,
+    magic: MagicArg,
+    utils: Arc<Utils>,
+) -> PartialBootstrapResult {
+    #[allow(deprecated)]
+    let source_config = n2n::Config {
+        address: address,
+        magic: Some(magic),
+        well_known: None,
+        mapper: Default::default(),
+        since: None,
+        min_depth: 0,
+        intersect: Some(IntersectArg::Point(PointArg(
+            MARY_FIRST_BLOCK_NO,
+            MARY_FIRST_BLOCK_HASH.to_owned(),
+        ))),
+        retry_policy: None,
+        finalize: None,
     };
 
     let source_setup = WithUtils::new(source_config, utils);

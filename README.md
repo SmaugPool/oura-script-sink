@@ -8,31 +8,32 @@ This is useful, among other things, to gather all minting policies.
 
 ## Usage
 
-```
-Cardano scripts dumper using Oura
-
-USAGE:
-    oura-script-sink [OPTIONS]
-
-OPTIONS:
-    -h, --help                 Print help information
-    -m, --metrics <METRICS>    Enable Prometheus metrics
-                                ('default' for 127.0.0.1:9188/metrics or ADDR:PORT/ENDPOINT)
-    -n, --network <NETWORK>    Network ('mainnet' or 'testnet') [default: mainnet]
-    -o, --output <OUTPUT>      Output directory [default: /tmp/scripts]
-    -s, --socket <SOCKET>      Cardano node socket path [default: ./socket]
-    -v, --verbose              Print scripts on standard output
-    -V, --version              Print version information
-```
+    USAGE:
+        oura-script-sink [OPTIONS] <--host <HOST>|--socket <SOCKET>>
+    
+    OPTIONS:
+        -h, --host <HOST>          Cardano node hostname or IP address
+            --help                 Print help information
+        -m, --metrics <METRICS>    Enable Prometheus metrics
+                                    ('default' for 127.0.0.1:9188/metrics or ADDR:PORT/ENDPOINT)
+        -n, --network <NETWORK>    Network ('mainnet', 'testnet' or magic) [default: mainnet]
+        -o, --output <OUTPUT>      Output directory [default: /tmp/scripts]
+        -p, --port <PORT>          Cardano node port [default: 3001]
+        -s, --socket <SOCKET>      Cardano node socket path
+        -v, --verbose              Print scripts on standard output
+        -V, --version              Print version information
 
 For example, assuming a Cardano node running locally with its socket path set to `path/to/socket`:
-```
-$ oura-script-sink --socket path/to/socket --verbose
-```
-or with Prometheus metrics and no output (daemon mode):
-```
-$ oura-script-sink --socket path/to/socket --metrics 0.0.0.0:9188/metrics
-```
+
+    $ oura-script-sink --socket path/to/socket --verbose
+
+With Prometheus metrics and no output (daemon mode):
+
+    $ oura-script-sink --socket path/to/socket --metrics 0.0.0.0:9188/metrics
+
+Or connecting to a remote node with local metrics:
+
+    $ oura-script-sink --host relays-new.cardano-mainnet.iohk.io --metrics default
 
 ## Output
 
@@ -57,40 +58,37 @@ Metrics in [Prometheus](https://prometheus.io/) format can be exposed using the 
 Metrics are disabled by default and `--metrics default` will enable them on `127.0.0.1:9188/metrics`, which will usually make them available only locally. Use `0.0.0.0:9188/metrics` instead to make them available from any network interface.
 
 Example:
-```bash
-$ curl localhost:9188/metrics
 
-# HELP chain_tip the last detected tip of the chain (height)
-# TYPE chain_tip gauge
-chain_tip 7106324
-# HELP rollback_count number of rollback events occurred
-# TYPE rollback_count counter
-rollback_count 1
-# HELP sink_current_slot last slot processed by the sink of the pipeline
-# TYPE sink_current_slot gauge
-sink_current_slot 58001490
-# HELP sink_event_count number of events processed by the sink of the pipeline
-# TYPE sink_event_count counter
-sink_event_count 8592
-# HELP source_current_height last height (block #) processed by the source of the pipeline
-# TYPE source_current_height gauge
-source_current_height 7105148
-# HELP source_current_slot last slot processed by the source of the pipeline
-# TYPE source_current_slot gauge
-source_current_slot 58001512
-# HELP source_event_count number of events processed by the source of the pipeline
-# TYPE source_event_count counter
-source_event_count 730951
-```
+    $ curl localhost:9188/metrics
+    
+    # HELP chain_tip the last detected tip of the chain (height)
+    # TYPE chain_tip gauge
+    chain_tip 7106324
+    # HELP rollback_count number of rollback events occurred
+    # TYPE rollback_count counter
+    rollback_count 1
+    # HELP sink_current_slot last slot processed by the sink of the pipeline
+    # TYPE sink_current_slot gauge
+    sink_current_slot 58001490
+    # HELP sink_event_count number of events processed by the sink of the pipeline
+    # TYPE sink_event_count counter
+    sink_event_count 8592
+    # HELP source_current_height last height (block #) processed by the source of the pipeline
+    # TYPE source_current_height gauge
+    source_current_height 7105148
+    # HELP source_current_slot last slot processed by the source of the pipeline
+    # TYPE source_current_slot gauge
+    source_current_slot 58001512
+    # HELP source_event_count number of events processed by the source of the pipeline
+    # TYPE source_event_count counter
+    source_event_count 730951
 
 ## Build
 
-```bash
-$ git clone git@github.com:SmaugPool/oura-script-sink.git
-
-$ cd oura-script-sink
-$ cargo install --path .
-```
+    $ git clone git@github.com:SmaugPool/oura-script-sink.git
+    
+    $ cd oura-script-sink
+    $ cargo install --path .
 
 # Support
 

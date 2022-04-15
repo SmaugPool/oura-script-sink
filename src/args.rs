@@ -1,4 +1,4 @@
-use clap::Parser;
+use clap::{ArgGroup, Parser};
 use oura::utils::metrics;
 use std::{
     default::Default,
@@ -11,7 +11,15 @@ use std::{
 /// Cardano scripts dumper using Oura
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
+#[clap(group(ArgGroup::new("node")
+    .required(true)
+    .args(&["host", "socket"]),
+))]
 pub struct Args {
+    /// Cardano node hostname or IP address
+    #[clap(short, long, group = "node")]
+    pub host: Option<String>,
+
     /// Enable Prometheus metrics{n} ('default' for 127.0.0.1:9188/metrics or ADDR:PORT/ENDPOINT)
     #[clap(short, long)]
     pub metrics: Option<Metrics>,
@@ -24,9 +32,13 @@ pub struct Args {
     #[clap(short, long, default_value = "/tmp/scripts")]
     pub output: String,
 
+    /// Cardano node port
+    #[clap(short, long, default_value_t = 3001)]
+    pub port: u16,
+
     /// Cardano node socket path
-    #[clap(short, long, default_value = "./socket")]
-    pub socket: String,
+    #[clap(short, long, group = "node")]
+    pub socket: Option<String>,
 
     /// Print scripts on standard output
     #[clap(short, long)]
