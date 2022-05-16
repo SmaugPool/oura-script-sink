@@ -42,12 +42,12 @@ pub fn script_writer_loop(input: StageReceiver, config: Config) -> Result<(), Er
     for event in input.iter() {
         config.utils.track_sink_progress(&event);
 
-        if let EventData::NativeScript { policy_id, script } = event.data {
-            let json = serde_json::to_string(&script)?;
-            let subdir = &policy_id[..2];
+        if let EventData::NativeWitness(record) = event.data {
+            let json = serde_json::to_string(&record.script_json)?;
+            let subdir = &record.policy_id[..2];
 
             let subdir = Path::new(&config.output).join(subdir);
-            let script_path = subdir.join(format!("{}.json", policy_id));
+            let script_path = subdir.join(format!("{}.json", record.policy_id));
 
             std::fs::create_dir_all(subdir)?;
 
@@ -55,7 +55,7 @@ pub fn script_writer_loop(input: StageReceiver, config: Config) -> Result<(), Er
                 let mut file = File::create(script_path)?;
                 file.write_all(json.as_bytes())?;
                 if config.verbose {
-                    println!("{} {}", policy_id, json);
+                    println!("{} {}", record.policy_id, json);
                 }
             }
         }

@@ -112,7 +112,7 @@ fn bootstrap_n2n_source(
 }
 
 fn bootstrap_filter(source_rx: StageReceiver) -> PartialBootstrapResult {
-    let check = Predicate::VariantIn(vec!["NativeScript".to_owned()]);
+    let check = Predicate::VariantIn(vec!["NativeWitness".to_owned()]);
     let filter_setup = selection::Config { check };
     let (filter_handle, filter_rx) = filter_setup.bootstrap(source_rx)?;
 
