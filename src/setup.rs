@@ -3,6 +3,7 @@ use std::{str::FromStr, sync::Arc, thread::JoinHandle};
 
 use oura::{
     filters::selection::{self, Predicate},
+    mapper,
     pipelining::{
         BootstrapResult, FilterProvider, PartialBootstrapResult, SinkProvider, SourceProvider,
         StageReceiver,
@@ -68,7 +69,10 @@ fn bootstrap_n2c_source(
         address: address,
         magic: Some(magic),
         well_known: None,
-        mapper: Default::default(),
+        mapper: mapper::Config {
+            include_block_end_events: true,
+            ..Default::default()
+        },
         since: None,
         min_depth: 0,
         intersect: Some(IntersectArg::Point(PointArg(
@@ -95,7 +99,10 @@ fn bootstrap_n2n_source(
         address: address,
         magic: Some(magic),
         well_known: None,
-        mapper: Default::default(),
+        mapper: mapper::Config {
+            include_block_end_events: true,
+            ..Default::default()
+        },
         since: None,
         min_depth: 0,
         intersect: Some(IntersectArg::Point(PointArg(

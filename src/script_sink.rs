@@ -40,24 +40,28 @@ impl SinkProvider for Config {
 
 pub fn script_writer_loop(input: StageReceiver, config: Config) -> Result<(), Error> {
     for event in input.iter() {
-        config.utils.track_sink_progress(&event);
+        match event.data {
+            EventData::NativeWitness(record) => {
+                let json = serde_json::to_string(&record.script_json)?;
+                let subdir = &record.policy_id[..2];
 
-        if let EventData::NativeWitness(record) = event.data {
-            let json = serde_json::to_string(&record.script_json)?;
-            let subdir = &record.policy_id[..2];
+                let subdir = Path::new(&config.output).join(subdir);
+                let script_path = subdir.join(format!("{}.json", record.policy_id));
 
-            let subdir = Path::new(&config.output).join(subdir);
-            let script_path = subdir.join(format!("{}.json", record.policy_id));
+                std::fs::create_dir_all(subdir)?;
 
-            std::fs::create_dir_all(subdir)?;
-
-            if !script_path.exists() {
-                let mut file = File::create(script_path)?;
-                file.write_all(json.as_bytes())?;
-                if config.verbose {
-                    println!("{} {}", record.policy_id, json);
+                if !script_path.exists() {
+                    let mut file = File::create(script_path)?;
+                    file.write_all(json.as_bytes())?;
+                    if config.verbose {
+                        println!("{} {}", record.policy_id, json);
+                    }
                 }
             }
+            EventData::BlockEnd(_) => {
+                config.utils.track_sink_progress(&event);
+            }
+            _ => {}
         }
     }
 
