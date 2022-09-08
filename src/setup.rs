@@ -76,6 +76,7 @@ fn bootstrap_n2c_source(
             MARY_FIRST_BLOCK_HASH.to_owned(),
         ))),
         retry_policy: None,
+        finalize: None,
     };
 
     let source_setup = WithUtils::new(source_config, utils);
