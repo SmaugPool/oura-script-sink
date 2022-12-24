@@ -15,7 +15,7 @@ use oura::{
 use crate::args::{Args, Metrics};
 use crate::script_sink::Config as ScriptSinkConfig;
 
-const MARY_FIRST_BLOCK_NO: u64 = 23068800;
+const MARY_FIRST_SLOT_NO: u64 = 23068800;
 static MARY_FIRST_BLOCK_HASH: &str =
     "a650a3f398ba4a9427ec8c293e9f7156d81fd2f7ca849014d8d2c1156c359b3a";
 
@@ -76,7 +76,7 @@ fn bootstrap_n2c_source(
         since: None,
         min_depth: 0,
         intersect: Some(IntersectArg::Point(PointArg(
-            MARY_FIRST_BLOCK_NO,
+            MARY_FIRST_SLOT_NO,
             MARY_FIRST_BLOCK_HASH.to_owned(),
         ))),
         retry_policy: None,
@@ -106,7 +106,7 @@ fn bootstrap_n2n_source(
         since: None,
         min_depth: 0,
         intersect: Some(IntersectArg::Point(PointArg(
-            MARY_FIRST_BLOCK_NO,
+            MARY_FIRST_SLOT_NO,
             MARY_FIRST_BLOCK_HASH.to_owned(),
         ))),
         retry_policy: None,
