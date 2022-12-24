@@ -45,7 +45,7 @@ pub struct Args {
     pub verbose: bool,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Metrics(metrics::Config);
 
 #[derive(Debug)]

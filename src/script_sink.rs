@@ -14,15 +14,13 @@ use std::sync::Arc;
 pub struct Config {
     utils: Arc<Utils>,
     output: String,
-    verbose: bool,
 }
 
 impl Config {
-    pub fn new(output: String, utils: Arc<Utils>, verbose: bool) -> Config {
+    pub fn new(output: String, utils: Arc<Utils>) -> Config {
         Config {
             output: output,
             utils: utils,
-            verbose: verbose,
         }
     }
 }
@@ -53,12 +51,18 @@ pub fn script_writer_loop(input: StageReceiver, config: Config) -> Result<(), Er
                 if !script_path.exists() {
                     let mut file = File::create(script_path)?;
                     file.write_all(json.as_bytes())?;
-                    if config.verbose {
-                        println!("{} {}", record.policy_id, json);
-                    }
+                    log::info!("{} {}", record.policy_id, json);
+                } else {
+                    log::debug!("{} already exists", record.policy_id);
                 }
             }
             EventData::BlockEnd(_) => {
+                log::trace!(
+                    "track_sink_progress(slot={:?} block={:?} hash={:?})",
+                    event.context.slot,
+                    event.context.block_number,
+                    event.context.block_hash
+                );
                 config.utils.track_sink_progress(&event);
             }
             _ => {}

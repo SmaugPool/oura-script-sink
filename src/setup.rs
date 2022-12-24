@@ -37,7 +37,7 @@ pub fn oura_bootstrap(args: Args) -> Result<Vec<JoinHandle<()>>, Error> {
     };
 
     let (filter_handle, filter_rx) = bootstrap_filter(source_rx)?;
-    let sink_handle = bootstrap_sink(args.output, utils, filter_rx, args.verbose)?;
+    let sink_handle = bootstrap_sink(args.output, utils, filter_rx)?;
 
     Ok(vec![source_handle, filter_handle, sink_handle])
 }
@@ -127,13 +127,8 @@ fn bootstrap_filter(source_rx: StageReceiver) -> PartialBootstrapResult {
     Ok((filter_handle, filter_rx))
 }
 
-fn bootstrap_sink(
-    output: String,
-    utils: Arc<Utils>,
-    filter_rx: StageReceiver,
-    verbose: bool,
-) -> BootstrapResult {
-    let sink_setup = ScriptSinkConfig::new(output, utils, verbose);
+fn bootstrap_sink(output: String, utils: Arc<Utils>, filter_rx: StageReceiver) -> BootstrapResult {
+    let sink_setup = ScriptSinkConfig::new(output, utils);
     let sink_handle = sink_setup.bootstrap(filter_rx)?;
 
     Ok(sink_handle)
